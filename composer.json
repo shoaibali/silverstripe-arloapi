@@ -1,0 +1,20 @@
+{
+    "name": "shoaibali/arloapi",
+    "description": "Gets events from Arlo public restful API",
+    "type": "silverstripe-module",
+    "keywords": ["silverstripe", "calendar", "events"],
+    "require": {
+        "php": ">=5.3.2",
+        "silverstripe/framework": "3.2.*",
+        "guzzle/http": "^6.1.1"
+    },
+    "authors": [
+        {
+            "name": "Shoaib Ali",
+            "email": "hacker.nz@gmail.com"
+        }
+    ],
+    "config": {
+        "process-timeout": 600
+    }
+}
