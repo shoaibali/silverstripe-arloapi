@@ -87,9 +87,22 @@ class EventSearch extends Object
         return $this->getCache()->save(serialize($events), $this->getCacheKey());
     }
 
-    // TODO - Deal with deleted events in Arlo
     private function syncToDB($events) {
+
         $events = $events->Items;
+
+        // Archive all the events that we have but not Arlo
+        $eventsInDb = ArloEvent::get();
+
+        if ($eventsInDb) {
+            foreach($eventsInDb as $eventdb) {
+                if (!$this->checkEventInAPI($events, $eventdb->EventID)){
+                    $eventdb->Archive = true;
+                    $eventdb->write();
+                }
+            }
+        }
+
         foreach($events as $event) {
             //identify the event by its ID which is to be unique
             $arloevent = ArloEvent::get()->filter(array('EventID' => $event->EventID))->First();
@@ -168,8 +181,6 @@ class EventSearch extends Object
     }
 
 
-
-
     public function searchEvents()
     {
         $fields = "?fields=" . implode(',', $this->eventFields);
@@ -182,6 +193,17 @@ class EventSearch extends Object
         $events = Convert::json2obj($response);
 
         return $events;
+    }
+
+    private function checkEventInAPI($events, $eventID) {
+        $found = false;
+        foreach($events as $event) {
+            if ($event->EventID == $eventID) {
+                $found = true;
+                break;
+            }
+        }
+        return $found;
     }
 
 }
